@@ -1,0 +1,199 @@
+DROP TABLE FILMY;
+DROP TABLE SALE
+DROP TABLE SEANSE
+DROP TABLE REZERWACJE
+DROP TABLE KLIENCI
+DROP TABLE BILETY
+DROP TABLE PROMOCJE
+DROP TABLE PRACOWNICY
+
+GO
+SET DATEFORMAT ymd;
+
+CREATE TABLE FILMY (
+    id_filmu INT,
+    tytul VARCHAR(100),
+    opis VARCHAR(1000),
+    gatunek VARCHAR(100),
+    czas_trwania VARCHAR(100),
+    CONSTRAINT FILMY_PK PRIMARY KEY (id_filmu)
+);
+CREATE TABLE PRACOWNICY (
+    id_pracownicy INT,
+    imie VARCHAR(30),
+    nazwisko VARCHAR(30),
+    stanowisko VARCHAR(30),
+    CONSTRAINT PRACOWNICY_PK PRIMARY KEY (id_pracownicy)
+);
+
+CREATE TABLE SALE (
+    numer_sali INT,
+    liczba_miejsc INT,
+    CONSTRAINT SALE_PK PRIMARY KEY (numer_sali)
+);
+
+CREATE TABLE PROMOCJE (
+    id_promocji INT,
+    rabat decimal(7, 2),
+    termin_waznosci date,
+    CONSTRAINT PROMOCJE_PK PRIMARY KEY (id_promocji)
+);
+
+CREATE TABLE SEANSE (
+    id_seansu INT,
+    czas_rozpoczencia TIME,
+    data DATE,
+    id_filmu INT,
+    numer_sali INT,
+    CONSTRAINT SEANSE_PK PRIMARY KEY (id_seansu),
+    FOREIGN KEY (id_filmu) REFERENCES FILMY (id_filmu),
+    FOREIGN KEY (numer_sali) REFERENCES SALE (numer_sali)
+);
+CREATE TABLE BILETY (
+    id_biletu INT,
+    typ VARCHAR(30),
+    cena INT,
+    data DATE,
+    id_promocji INT,
+    CONSTRAINT BILETY_PK PRIMARY KEY (id_biletu),
+    FOREIGN KEY (id_promocji) REFERENCES PROMOCJE (id_promocji)
+);
+
+CREATE TABLE KLIENCI (
+    id_klienciu INT,
+    imie VARCHAR(30),
+    nazwisko VARCHAR(30),
+    email VARCHAR(30),
+    numer_telefonu INT,
+    id_biletu INT,
+    CONSTRAINT KLIENCI_PK PRIMARY KEY (id_klienciu),
+    FOREIGN KEY (id_biletu) REFERENCES BILETY (id_biletu)
+);
+
+
+CREATE TABLE REZERWACJE (
+    id_rezerwacji INT,
+    data_rezerwacji DATE,
+    status VARCHAR(30),
+    id_seansu INT,
+    id_klienciu INT,
+    id_pracownicy INT,
+    CONSTRAINT REZERWACJE_PK PRIMARY KEY (id_rezerwacji),
+    FOREIGN KEY (id_seansu) REFERENCES SEANSE (id_seansu),
+    FOREIGN KEY (id_klienciu) REFERENCES KLIENCI (id_klienciu),
+    FOREIGN KEY (id_pracownicy) REFERENCES PRACOWNICY (id_pracownicy)
+
+);
+
+INSERT INTO FILMY(id_filmu, tytul, opis, gatunek, czas_trwania) VALUES (1,'Harry Potter i Czara Ognia','Film opowiada o perypetiach Harry Pottera i jego przyjaciół','Fantasy', '02:30:00'),
+                                                                       (2,'Harry Potter i Komnata Tajemnic', 'Harry Potter i jego przyjaciele odkrywają tajemnicę komnaty w Hogwarcie', 'Fantasy', '02:15:00'),
+                                                                       (3,'Harry Potter i Książe Półkrwi', 'Harry i jego przyjaciele muszą zmierzyć się z nowym zagrożeniem', 'Fantasy', '02:45:00'),
+                                                                       (4, 'Harry Potter i Insygnia Śmierci, cz. 1', 'Harry i jego przyjaciele starają się powstrzymać Voldemorta', 'Fantasy', '02:30:00'),
+                                                                       (5, 'Harry Potter i Insygnia Śmierci, cz. 2', 'Ostateczne starcie pomiędzy dobrem a złem w świecie czarodziejów', 'Fantasy', '02:45:00')
+
+INSERT INTO PRACOWNICY(id_pracownicy, imie, nazwisko, stanowisko) VALUES (1, 'Jan', 'Kowalski', 'Kasjer'),
+                                                                         (2, 'Anna', 'Obama', 'Kasjer')
+
+INSERT INTO SALE(numer_sali, liczba_miejsc) VALUES (1,100),
+                                                   (2,100)
+
+INSERT INTO PROMOCJE(id_promocji, rabat, termin_waznosci) VALUES (1, 0.1, '2023-03-15'),
+                                                                 (2, 0.1, '2023-03-15')
+
+INSERT INTO SEANSE(id_seansu, czas_rozpoczencia, data, id_filmu, numer_sali) VALUES (1, '20:00', '2023-02-28', 1, 1),
+                                                                                    (2, '10:00', '2023-02-28', 2, 1),
+                                                                                    (3, '10:00', '2023-02-28', 3, 2),
+                                                                                    (4, '10:00', '2023-02-28', 4, 1),
+                                                                                    (5, '10:00', '2023-02-28', 5, 1)
+
+INSERT INTO BILETY(id_biletu, typ, cena, data, id_promocji) VALUES (1, 'Normalny', 15, '2023-02-28', 1),
+                                                                   (2, 'Normalny', 20, '2023-02-28', null),
+                                                                   (3, 'Normalny', 20, '2023-02-28', null),
+                                                                   (4, 'Normalny', 20, '2023-02-28', null),
+                                                                   (5, 'VIP', 15, '2023-02-28', 2)
+
+INSERT INTO KLIENCI(id_klienciu, imie, nazwisko, email, numer_telefonu, id_biletu) VALUES (1, 'Anna', 'Nowak', 'anna.nowak@gmail.com', '123456789', 1),
+                                                                                          (2, 'Andrii', 'Nahornyi', 'andrii.nahornyi@gmail.com', '987654321', 2),
+                                                                                          (3, 'Dima', 'Samkov', 'dima.samkov@gmail.com', '123987456', 3),
+                                                                                          (4, 'Jakub', 'Fraj', 'jakub.fraj@gmail.com', '987123456', 4),
+                                                                                          (5, 'Denys', 'Dmytruk', 'denys.dmytruk@gmail.com', '132465789', 5)
+
+INSERT INTO REZERWACJE(id_rezerwacji, data_rezerwacji, status, id_seansu, id_klienciu, id_pracownicy) VALUES (1, '2023-01-01', 'Oczekujące', 1, 1, 1),
+                                                                                                             (2, '2023-02-01', 'Oczekujące', 2, 2, 2),
+                                                                                                             (3, '2022-01-01', 'Oczekujące', 1, 3, 1)
+
+--Procedure N1 w T-SQL - zwiekszenie ceny biletu o 10%
+CREATE PROCEDURE increase_cene AS
+    BEGIN
+        UPDATE BILETY SET cena = cena * 1.1;
+    end;
+
+    exec increase_cene;
+    select * from BILETY;
+
+--Procedure N2 w T-SQL - dodaje nowego klienta
+CREATE PROCEDURE dodaj_klienta (@p_id_klienciu INT, @p_imie VARCHAR(50), @p_nazwisko VARCHAR(50), @p_email VARCHAR(50), @p_numer_telefonu INT, @p_id_biletu INT)
+    AS
+    BEGIN
+        DECLARE @v_count INT
+        SELECT @v_count = COUNT(*) FROM KLIENCI WHERE id_klienciu = @p_id_klienciu
+        IF (@v_count = 0)
+            BEGIN
+                INSERT INTO KLIENCI(id_klienciu, imie, nazwisko, email, numer_telefonu, id_biletu)
+                VALUES (@p_id_klienciu, @p_imie, @p_nazwisko, @p_email, @p_numer_telefonu, @p_id_biletu)
+                END
+            ELSE
+                BEGIN
+                    RAISERROR ('id_klienciu already exists', 16, 1)
+                    END
+                END
+
+    EXEC dodaj_klienta 7, 'Jan', 'Daun', 'jDaun@email.com', 123456, 1
+    select * from KLIENCI;
+    
+--Wyzwalacz N1 w T-SQL - sprawdzenie rabatu
+CREATE TRIGGER sprawdzenie_rabatu
+    ON PROMOCJE
+    AFTER INSERT, UPDATE
+    AS
+    BEGIN
+        IF EXISTS(SELECT * FROM inserted i WHERE i.termin_waznosci < GETDATE() - 1)
+            BEGIN
+                UPDATE PROMOCJE
+                SET rabat = 0
+                FROM inserted i
+                WHERE PROMOCJE.termin_waznosci = i.termin_waznosci
+                END
+            END;
+INSERT INTO PROMOCJE (id_promocji, rabat, termin_waznosci)
+    VALUES  (3, 0.1, '2022-12-01'),
+            (4, 0.1, '2022-12-01'),
+            (5, 0.1, '2022-12-01'),
+            (6, 0.1, '2023-12-01'),
+            (7, 0.1, '2023-11-01'),
+            (8, 0.1, '2023-10-01')
+
+SELECT * FROM PROMOCJE
+    
+--Wyzwalacz N2 w T-SQL - cena biletu po rabatu
+CREATE TRIGGER cena_bileta_po_rabatu
+    ON PROMOCJE
+    AFTER UPDATE
+    AS
+    BEGIN
+        DECLARE @temp_table TABLE (id_promocji INT, rabat decimal(7, 2));
+        INSERT INTO @temp_table
+        SELECT id_promocji, rabat FROM inserted;
+        UPDATE BILETY
+        SET cena = cena * (1 - (SELECT rabat FROM @temp_table WHERE id_promocji = BILETY.id_promocji))
+        WHERE id_promocji IN (SELECT id_promocji FROM @temp_table);
+        END;
+
+UPDATE PROMOCJE
+SET rabat = 0.10
+WHERE id_promocji = 1;
+
+SELECT *
+FROM BILETY
+WHERE id_promocji = 1;
+
